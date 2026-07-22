@@ -1,6 +1,6 @@
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parents[1]/'data'/'raw'
+DATA_DIR = Path(__file__).resolve().parents[1]/'data'/'bronze'
 
 def get_file_name(year: int, month: int) -> str:
     return f"voting_{year}_{month:02d}.json"
