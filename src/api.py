@@ -22,7 +22,7 @@ def get_data_format(year: int, month: int) -> tuple[str, str]:
 
 def get_voting(term: int, date_from: str, date_to: str) -> str:
     max_term = 10
-    if term <= 0 and term > max_term:
+    if term <= 0 or term > max_term:
         raise ValueError(f"Term must be greater than 0: {term} and less than {max_term}!")
 
     url = f"{SEJM_URL}/term{term}/votings/search"
