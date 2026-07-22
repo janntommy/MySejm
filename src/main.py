@@ -8,13 +8,14 @@ def download_json(year: int, month: int, term=10) -> None:
     try:
         date_from, date_to = get_data_format(year, month)
         voting_data = get_voting(term, date_from, date_to)
-
         file_name = get_file_name(year, month)
-        file_path = save(voting_data, file_name)
-    except ValueError as err0r:
-        print(f"Validation error: {year}-{month:02d}: {err0r}")
-    except RuntimeError as err0r:
-        print(f"SEJM API error: {year}-{month:02d}: {err0r}")
+
+        save(voting_data, file_name)
+
+    except ValueError as error:
+        print(f"Validation error: {year}-{month:02d}: {error}")
+    except RuntimeError as error:
+        print(f"SEJM API error: {year}-{month:02d}: {error}")
 
 def main():
     dates_to_download = [(2026, 6),
