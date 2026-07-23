@@ -1,7 +1,8 @@
 import time
 
 from api import get_data_format, get_voting
-from saver import get_file_name, save
+from bronze_loader import get_file_name, save
+from silver_transformation import load_to_silver
 
 
 def download_json(year: int, month: int, term=10) -> None:
@@ -30,7 +31,13 @@ def main():
     for year, month in dates_to_download:
         download_json(year, month)
         time.sleep(1)
-        print(f"succesfully downloaded {year}-{month:02d} data.")
+        print(f"BRONZE - succesfully downloaded {year}-{month:02d} data.")
+
+        try:
+            load_to_silver(year, month)
+        except FileNotFoundError:
+            print(f"SILVER - Cannot find file: {year}-{month:02d}.")
+
 
 if __name__ == "__main__":
     main()
