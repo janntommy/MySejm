@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-BRONZE_DIR = Path(__file__).resolve().parent / "data" / "bronze"
-SILVER_DIR = Path(__file__).resolve().parent / "data" / "silver"
+BRONZE_DIR = Path(__file__).resolve().parents[1] / "data" / "bronze"
+SILVER_DIR = Path(__file__).resolve().parents[1] / "data" / "silver"
 
 RENAMED_COL_NAMES = {
     "majorityType": "majority_type",
@@ -15,7 +15,7 @@ RENAMED_COL_NAMES = {
     "votingNumber": "voting_number",
 }
 
-COLUMNS = ["abstain", "against_all", "date", "description", "kind", "pdf_link", "majority_type", "majority_votes", "no",
+COLUMNS = ["abstain", "against_all", "date", "description", "kind", "majority_type", "majority_votes", "no",
            "not_participating", "present", "sitting", "sitting_day", "term", "title", "topic", "total_voted",
            "voting_number", "yes"]
 
@@ -26,7 +26,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df["date"] = pd.to_datetime(df["date"])
     df = df.dropna(subset=["date"])
 
-    df = df.rename(columns=RENAMED_COL_NAMES, inplace=True)
+    df.rename(columns=RENAMED_COL_NAMES, inplace=True)
 
     for col in COLUMNS:
         if col not in df.columns:
@@ -43,3 +43,16 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.drop_duplicates(subset=["term", "sitting", "voting_number"])
     return df[COLUMNS]
+
+def load_to_silver(year: int, month: int) -> None:
+    bronze_file = BRONZE_DIR / f"voting_{year}_{month:02d}.json"
+
+    if not bronze_file.exists():
+        raise FileNotFoundError(f"File {bronze_file} does not exist")
+
+    df_silver = clean_data(pd.read_json(bronze_file))
+
+    SILVER_DIR.mkdir(parents=True, exist_ok=True)
+    path = SILVER_DIR / f"voting_{year}_{month:02d}.csv"
+    df_silver.to_csv(path, index=False, encoding="utf-8")
+    print(f"SILVER - succesfully loaded into 'voting_{year}_{month:02d}.csv'.")
