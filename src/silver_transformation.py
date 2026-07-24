@@ -23,7 +23,7 @@ NUMERIC_COLUMNS = ["yes", "no", "abstain", "against_all", "not_participating", "
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=["term", "sitting", "votingNumber", "date"]).copy()
-    df["date"] = pd.to_datetime(df["date"])
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.dropna(subset=["date"])
 
     df.rename(columns=RENAMED_COL_NAMES, inplace=True)
